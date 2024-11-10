@@ -1,2 +1,5 @@
 # workout-app
-Workout app for personal use
+Workout tracking and planning app for personal use. Web based
+## Initial features to implement
+- 
+
