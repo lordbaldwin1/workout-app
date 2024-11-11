@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import '../App.css'
+import { useState } from 'react';
+import '../App.css';
 
 const InputExercise = ({ exercise, rir, setExercise, setRir }) => {
     return (
@@ -20,30 +20,31 @@ const InputExercise = ({ exercise, rir, setExercise, setRir }) => {
     );
 };
 
-const LogRows = ({ log, updateLog }) => {
-    const handleWeightChange = (index, value) => {
-        updateLog(index, { weight: value });
+const LogRows = ({ log, updateLog, exerciseIndex }) => {
+    const handleWeightChange = (setIndex, value) => {
+        updateLog(exerciseIndex, setIndex, { weight: value });
     };
-    const handleRepsChange = (index, value) => {
-        updateLog(index, { reps: value });
+    const handleRepsChange = (setIndex, value) => {
+        updateLog(exerciseIndex, setIndex, { reps: value });
     };
 
     return (
         <div className='exercise-row'>
+            <h3>{log.exercise}</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>Exercise</th>
+                        <th>Set</th>
                         <th>RIR</th>
                         <th>Weight</th>
                         <th>Reps</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {log.map((row, index) => (
+                    {log.sets.map((row, index) => (
                         <tr key={index}>
-                            <td>{row.exercise}</td>
-                            <td>{row.rir}</td>
+                            <td>{index + 1}</td>
+                            <td>{log.rir}</td>
                             <td>
                                 <input
                                     type='number'
@@ -75,34 +76,43 @@ const WorkoutLog = () => {
     const [showInput, setShowInput] = useState(false);
 
     const handleAdd = () => {
-        if(exercise && rir) {
-            setLog([...log, { exercise, rir, weight: '', reps: ''}]);
+        if (exercise && rir) {
+            setLog([...log, { exercise, rir, sets: [{ weight: '', reps: '' }] }]);
             setExercise('');
             setRir('');
             setShowInput(false);
         }
     };
 
-    const updateLog = (index, updatedFields) => {
+    const updateLog = (exerciseIndex, setIndex, updatedFields) => {
         setLog((prevLog) =>
             prevLog.map((entry, i) =>
-                i === index ? { ...entry, ...updatedFields } : entry
+                i === exerciseIndex
+                    ? {
+                          ...entry,
+                          sets: entry.sets.map((set, j) =>
+                              j === setIndex ? { ...set, ...updatedFields } : set
+                          ),
+                      }
+                    : entry
             )
         );
     };
-    
+
     return (
         <div>
             {showInput ? (
                 <>
-                <InputExercise exercise={exercise} rir={rir} setExercise={setExercise} setRir={setRir} />
-                <button onClick={handleAdd}>Add Exercise</button>
+                    <InputExercise exercise={exercise} rir={rir} setExercise={setExercise} setRir={setRir} />
+                    <button onClick={handleAdd}>Add Exercise</button>
                 </>
             ) : (
-            <button onClick={() => setShowInput(true)}>New Exercise</button>
+                <button onClick={() => setShowInput(true)}>New Exercise</button>
             )}
             <div>
-                <LogRows log={log} updateLog={updateLog} />
+                {log.map((entry, index) => (
+                    <LogRows key={index} log={entry} updateLog={updateLog} exerciseIndex={index} />
+                ))}
             </div>
         </div>
     );
