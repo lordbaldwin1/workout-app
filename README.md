@@ -1,7 +1,6 @@
 # workout-app
 Workout tracking and planning app for personal use. Web based
 ## TODO (in-order of priority)
-- New exercise makes new table rather than row
 - Button to add set (duplicate row to table)
 - Button to remove set and remove exercise
 - Pressing enter adds exercise
